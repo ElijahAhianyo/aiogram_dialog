@@ -9,8 +9,13 @@ from ..when import WhenCondition
 
 
 class Group(Keyboard):
-    def __init__(self, *buttons: Keyboard, id: Optional[str] = None, width: int = None,
-                 when: WhenCondition = None):
+    def __init__(
+            self,
+            *buttons: Keyboard,
+            id: Optional[str] = None,
+            width: int = None,
+            when: WhenCondition = None
+    ):
         super().__init__(id, when)
         self.buttons = buttons
         self.width = width
@@ -25,7 +30,9 @@ class Group(Keyboard):
                 return widget
         return None
 
-    async def _render_keyboard(self, data: Dict, manager: DialogManager) -> List[List[InlineKeyboardButton]]:
+    async def _render_keyboard(
+            self, data: Dict, manager: DialogManager
+    ) -> List[List[InlineKeyboardButton]]:
         kbd: List[List[InlineKeyboardButton]] = []
         for b in self.buttons:
             b_kbd = await b.render_keyboard(data, manager)
@@ -40,7 +47,8 @@ class Group(Keyboard):
         return kbd
 
     def _wrap_kbd(
-            self, kbd: Iterable[InlineKeyboardButton],
+            self,
+            kbd: Iterable[InlineKeyboardButton],
     ) -> List[List[InlineKeyboardButton]]:
         res: List[List[InlineKeyboardButton]] = []
         row: List[InlineKeyboardButton] = []
@@ -54,7 +62,9 @@ class Group(Keyboard):
         return res
 
     async def _process_other_callback(
-            self, c: CallbackQuery, dialog: ManagedDialogProto,
+            self,
+            c: CallbackQuery,
+            dialog: ManagedDialogProto,
             manager: DialogManager,
     ) -> bool:
         for b in self.buttons:
@@ -64,10 +74,22 @@ class Group(Keyboard):
 
 
 class Row(Group):
-    def __init__(self, *buttons: Keyboard, id: Optional[str] = None, when: WhenCondition = None):
-        super().__init__(*buttons, id=id, width=9999, when=when)  # telegram doe not allow even 100 columns
+    def __init__(
+            self,
+            *buttons: Keyboard,
+            id: Optional[str] = None,
+            when: WhenCondition = None
+    ):
+        super().__init__(
+            *buttons, id=id, width=9999, when=when
+        )  # telegram doe not allow even 100 columns
 
 
 class Column(Group):
-    def __init__(self, *buttons: Keyboard, id: Optional[str] = None, when: WhenCondition = None):
+    def __init__(
+            self,
+            *buttons: Keyboard,
+            id: Optional[str] = None,
+            when: WhenCondition = None
+    ):
         super().__init__(*buttons, id=id, when=when, width=1)

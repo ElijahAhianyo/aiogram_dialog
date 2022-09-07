@@ -6,8 +6,14 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-from aiogram_dialog import Dialog, DialogManager, Window, DialogRegistry, BaseDialogManager, \
-    StartMode
+from aiogram_dialog import (
+    Dialog,
+    DialogManager,
+    Window,
+    DialogRegistry,
+    BaseDialogManager,
+    StartMode,
+)
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const, Multi, Progress
 
@@ -16,13 +22,16 @@ API_TOKEN = "PLACE YOUR TOKEN HERE"
 
 # name input dialog
 
+
 class Bg(StatesGroup):
     progress = State()
 
 
 async def get_bg_data(dialog_manager: DialogManager, **kwargs):
     return {
-        "progress": dialog_manager.current_context().dialog_data.get("progress", 0)
+        "progress": dialog_manager.current_context().dialog_data.get(
+            "progress", 0
+        )
     }
 
 
@@ -87,5 +96,5 @@ async def main():
     await dp.start_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

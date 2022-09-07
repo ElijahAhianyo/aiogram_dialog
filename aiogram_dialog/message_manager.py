@@ -4,13 +4,18 @@ from typing import IO, Optional, Union
 from aiogram import Bot
 from aiogram.types import ContentType, InputMedia, Message
 from aiogram.utils.exceptions import (
-    MessageNotModified, MessageCantBeEdited, MessageToEditNotFound,
-    MessageToDeleteNotFound, MessageCantBeDeleted,
+    MessageNotModified,
+    MessageCantBeEdited,
+    MessageToEditNotFound,
+    MessageToDeleteNotFound,
+    MessageCantBeDeleted,
 )
 
 from .context.events import ShowMode
 from .manager.protocols import (
-    MediaAttachment, NewMessage, MessageManagerProtocol,
+    MediaAttachment,
+    NewMessage,
+    MessageManagerProtocol,
 )
 from .utils import get_media_id
 
@@ -30,7 +35,6 @@ SEND_METHODS = {
 
 
 class MessageManager(MessageManagerProtocol):
-
     async def get_media_source(self, media: MediaAttachment) -> Union[IO, str]:
         if media.file_id:
             return media.file_id.file_id
@@ -39,12 +43,16 @@ class MessageManager(MessageManagerProtocol):
         else:
             return open(media.path, "rb")
 
-    async def show_message(self, bot: Bot, new_message: NewMessage,
-                           old_message: Optional[Message]):
+    async def show_message(
+            self, bot: Bot, new_message: NewMessage,
+            old_message: Optional[Message]
+    ):
         if not old_message or new_message.show_mode is ShowMode.SEND:
             logger.debug(
                 "Send new message, because: mode=%s, has old_message=%s",
-                new_message.show_mode, bool(old_message))
+                new_message.show_mode,
+                bool(old_message),
+            )
             await self.remove_kbd(bot, old_message)
             return await self.send_message(bot, new_message)
 
@@ -52,13 +60,13 @@ class MessageManager(MessageManagerProtocol):
         need_media = bool(new_message.media)
 
         if (
-                new_message.text == old_message.text and
-                new_message.reply_markup == old_message.reply_markup and
-                had_media == need_media and
-                (
-                        not need_media or
-                        new_message.media.file_id == get_media_id(old_message)
-                )
+                new_message.text == old_message.text
+                and new_message.reply_markup == old_message.reply_markup
+                and had_media == need_media
+                and (
+                not need_media
+                or new_message.media.file_id == get_media_id(old_message)
+        )
         ):
             # nothing changed: text, keyboard or media
             return old_message
@@ -66,8 +74,10 @@ class MessageManager(MessageManagerProtocol):
         if had_media != need_media:
             # we cannot edit message if media appeared or removed
             try:
-                await bot.delete_message(chat_id=old_message.chat.id,
-                                         message_id=old_message.message_id)
+                await bot.delete_message(
+                    chat_id=old_message.chat.id,
+                    message_id=old_message.message_id,
+                )
             except (MessageToDeleteNotFound, MessageCantBeDeleted):
                 await self.remove_kbd(bot, old_message)
             return await self.send_message(bot, new_message)
@@ -87,13 +97,17 @@ class MessageManager(MessageManagerProtocol):
                     message_id=old_message.message_id,
                     chat_id=old_message.chat.id,
                 )
-            except (MessageNotModified, MessageCantBeEdited,
-                    MessageToEditNotFound):
+            except (
+                    MessageNotModified,
+                    MessageCantBeEdited,
+                    MessageToEditNotFound,
+            ):
                 pass  # nothing to remove
 
     # Edit
-    async def edit_message(self, bot: Bot, new_message: NewMessage,
-                           old_message: Message):
+    async def edit_message(
+            self, bot: Bot, new_message: NewMessage, old_message: Message
+    ):
         if new_message.media:
             if new_message.media.file_id == get_media_id(old_message):
                 return await self.edit_caption(bot, new_message, old_message)
@@ -101,8 +115,9 @@ class MessageManager(MessageManagerProtocol):
         else:
             return await self.edit_text(bot, new_message, old_message)
 
-    async def edit_caption(self, bot: Bot, new_message: NewMessage,
-                           old_message: Message):
+    async def edit_caption(
+            self, bot: Bot, new_message: NewMessage, old_message: Message
+    ):
         logger.debug("edit_caption to %s", new_message.chat)
         return await bot.edit_message_caption(
             message_id=old_message.message_id,
@@ -112,8 +127,9 @@ class MessageManager(MessageManagerProtocol):
             parse_mode=new_message.parse_mode,
         )
 
-    async def edit_text(self, bot: Bot, new_message: NewMessage,
-                        old_message: Message):
+    async def edit_text(
+            self, bot: Bot, new_message: NewMessage, old_message: Message
+    ):
         logger.debug("edit_text to %s", new_message.chat)
         return await bot.edit_message_text(
             message_id=old_message.message_id,
@@ -124,10 +140,14 @@ class MessageManager(MessageManagerProtocol):
             disable_web_page_preview=new_message.disable_web_page_preview,
         )
 
-    async def edit_media(self, bot: Bot, new_message: NewMessage,
-                         old_message: Message):
-        logger.debug("edit_media to %s, media_id: %s",
-                     new_message.chat, new_message.media.file_id)
+    async def edit_media(
+            self, bot: Bot, new_message: NewMessage, old_message: Message
+    ):
+        logger.debug(
+            "edit_media to %s, media_id: %s",
+            new_message.chat,
+            new_message.media.file_id,
+        )
         media = InputMedia(
             caption=new_message.text,
             reply_markup=new_message.reply_markup,
@@ -162,8 +182,11 @@ class MessageManager(MessageManagerProtocol):
         )
 
     async def send_media(self, bot: Bot, new_message: NewMessage):
-        logger.debug("send_media to %s, media_id: %s",
-                     new_message.chat, new_message.media.file_id)
+        logger.debug(
+            "send_media to %s, media_id: %s",
+            new_message.chat,
+            new_message.media.file_id,
+        )
         method = getattr(bot, SEND_METHODS[new_message.media.type], None)
         if not method:
             raise ValueError(

@@ -7,12 +7,19 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from aiogram_dialog import (
-    Dialog, DialogManager, DialogRegistry, Window,
+    Dialog,
+    DialogManager,
+    DialogRegistry,
+    Window,
 )
 from aiogram_dialog.manager.protocols import LaunchMode
 from aiogram_dialog.widgets.kbd import (
-    Row, Checkbox, Radio, ManagedCheckboxAdapter,
-    ListGroup, ManagedListGroupAdapter,
+    Row,
+    Checkbox,
+    Radio,
+    ManagedCheckboxAdapter,
+    ListGroup,
+    ManagedListGroupAdapter,
 )
 from aiogram_dialog.widgets.text import Const, Format
 
@@ -32,9 +39,7 @@ def when_checked(data: Dict, widget, manager: DialogManager) -> bool:
 
 dialog = Dialog(
     Window(
-        Const(
-            "Hello, please check you options for each item:"
-        ),
+        Const("Hello, please check you options for each item:"),
         ListGroup(
             Checkbox(
                 Format("✓ {item}"),
@@ -54,11 +59,10 @@ dialog = Dialog(
             id="lg",
             item_id_getter=str,
             items=["apple", "orange", "pear"],
-
         ),
         state=DialogSG.greeting,
     ),
-    launch_mode=LaunchMode.SINGLE_TOP
+    launch_mode=LaunchMode.SINGLE_TOP,
 )
 
 
@@ -75,5 +79,5 @@ async def main():
     await dp.start_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

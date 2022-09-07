@@ -8,13 +8,19 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery, ContentType
 
-from aiogram_dialog import Dialog, DialogManager, DialogRegistry, Window, ChatEvent, StartMode
+from aiogram_dialog import (
+    Dialog,
+    DialogManager,
+    DialogRegistry,
+    Window,
+    ChatEvent,
+    StartMode,
+)
 from aiogram_dialog.manager.protocols import ManagedDialogAdapterProto
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button, Select, Row, SwitchTo, Back
 from aiogram_dialog.widgets.media import StaticMedia
 from aiogram_dialog.widgets.text import Const, Format, Multi
-
 
 src_dir = os.path.normpath(os.path.join(__file__, os.path.pardir))
 
@@ -36,8 +42,9 @@ async def get_data(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def name_handler(m: Message, dialog: ManagedDialogAdapterProto,
-                       manager: DialogManager):
+async def name_handler(
+        m: Message, dialog: ManagedDialogAdapterProto, manager: DialogManager
+):
     if manager.is_preview():
         await dialog.next()
         return
@@ -54,8 +61,9 @@ async def on_finish(c: CallbackQuery, button: Button, manager: DialogManager):
     await manager.done()
 
 
-async def on_age_changed(c: ChatEvent, select: Any, manager: DialogManager,
-                         item_id: str):
+async def on_age_changed(
+        c: ChatEvent, select: Any, manager: DialogManager, item_id: str
+):
     manager.current_context().dialog_data["age"] = item_id
     await manager.dialog().next()
 
@@ -81,7 +89,7 @@ dialog = Dialog(
         ),
         state=DialogSG.age,
         getter=get_data,
-        preview_data={"name": "Tishka17"}
+        preview_data={"name": "Tishka17"},
     ),
     Window(
         Multi(
@@ -96,7 +104,7 @@ dialog = Dialog(
         ),
         getter=get_data,
         state=DialogSG.finish,
-    )
+    ),
 )
 
 
@@ -118,5 +126,5 @@ async def main():
     await dp.start_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

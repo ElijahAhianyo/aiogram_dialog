@@ -7,13 +7,22 @@ from aiogram.types import Message, CallbackQuery, Document
 from .bg_manager import BgManager
 from .dialog import ManagedDialogAdapter
 from .protocols import (
-    DialogManager, BaseDialogManager, LaunchMode,
-    ManagedDialogAdapterProto, ManagedDialogProto, DialogRegistryProto,
+    DialogManager,
+    BaseDialogManager,
+    LaunchMode,
+    ManagedDialogAdapterProto,
+    ManagedDialogProto,
+    DialogRegistryProto,
     NewMessage,
 )
 from ..context.context import Context
 from ..context.events import (
-    ChatEvent, StartMode, ShowMode, Data, FakeChat, FakeUser,
+    ChatEvent,
+    StartMode,
+    ShowMode,
+    Data,
+    FakeChat,
+    FakeUser,
 )
 from ..context.intent_filter import CONTEXT_KEY, STORAGE_KEY, STACK_KEY
 from ..context.stack import Stack, DEFAULT_STACK_ID
@@ -25,8 +34,9 @@ logger = getLogger(__name__)
 
 
 class ManagerImpl(DialogManager):
-    def __init__(self, event: ChatEvent, registry: DialogRegistryProto,
-                 data: Dict):
+    def __init__(
+            self, event: ChatEvent, registry: DialogRegistryProto, data: Dict
+    ):
         self.disabled = False
         self._registry = registry
         self.event = event
@@ -78,15 +88,19 @@ class ManagerImpl(DialogManager):
 
     async def _remove_kbd(self) -> None:
         chat = get_chat(self.event)
-        message = Message(chat=chat,
-                          message_id=self.current_stack().last_message_id)
+        message = Message(
+            chat=chat, message_id=self.current_stack().last_message_id
+        )
         await self._registry.message_manager.remove_kbd(
-            self.event.bot, message,
+            self.event.bot,
+            message,
         )
         self.current_stack().last_message_id = None
 
     async def _process_last_dialog_result(
-            self, start_data: Data, result: Any,
+            self,
+            start_data: Data,
+            result: Any,
     ) -> None:
         """Process closing last dialog in stack"""
         await self._remove_kbd()
@@ -98,7 +112,8 @@ class ManagerImpl(DialogManager):
         context = self.current_context()
         if not context:
             await self._process_last_dialog_result(
-                old_context.start_data, result,
+                old_context.start_data,
+                result,
             )
             return
         dialog = self._dialog()
@@ -179,8 +194,10 @@ class ManagerImpl(DialogManager):
         self.check_disabled()
         context = self.current_context()
         if context.state.group != state.group:
-            raise ValueError(f"Cannot switch to another state group. "
-                             f"Current state: {context.state}, asked for {state}")
+            raise ValueError(
+                f"Cannot switch to another state group. "
+                f"Current state: {context.state}, asked for {state}"
+            )
         context.state = state
 
     async def show(self, new_message: NewMessage) -> Message:
@@ -206,16 +223,20 @@ class ManagerImpl(DialogManager):
                     document = None
                     # we set some non empty-text which is not equal to anything
                     text = object()
-                old_message = Message(message_id=stack.last_message_id,
-                                      document=document,
-                                      text=text,
-                                      chat=get_chat(self.event))
+                old_message = Message(
+                    message_id=stack.last_message_id,
+                    document=document,
+                    text=text,
+                    chat=get_chat(self.event),
+                )
             else:
                 old_message = None
         if new_message.show_mode is ShowMode.AUTO:
             new_message.show_mode = self._calc_show_mode()
         res = await self._registry.message_manager.show_message(
-            self.event.bot, new_message, old_message,
+            self.event.bot,
+            new_message,
+            old_message,
         )
         if isinstance(self.event, Message):
             stack.last_income_media_group_id = self.event.media_group_id
@@ -230,7 +251,10 @@ class ManagerImpl(DialogManager):
         if isinstance(self.event, Message):
             if self.event.media_group_id is None:
                 return ShowMode.SEND
-            elif self.event.media_group_id == self.current_stack().last_income_media_group_id:
+            elif (
+                    self.event.media_group_id
+                    == self.current_stack().last_income_media_group_id
+            ):
                 return ShowMode.EDIT
             else:
                 return ShowMode.SEND
@@ -259,7 +283,7 @@ class ManagerImpl(DialogManager):
         else:
             user = FakeUser(id=user_id)
 
-        same_chat = (user.id == current_user.id and chat.id == current_chat.id)
+        same_chat = user.id == current_user.id and chat.id == current_chat.id
         intent_id = None
         if stack_id is None:
             if same_chat:

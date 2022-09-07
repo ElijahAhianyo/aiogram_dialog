@@ -10,9 +10,13 @@ from ..exceptions import UnknownState, UnknownIntent
 
 
 class StorageProxy:
-    def __init__(self, storage: BaseStorage,
-                 user_id: int, chat_id: int,
-                 state_groups: Dict[str, Type[StatesGroup]]):
+    def __init__(
+            self,
+            storage: BaseStorage,
+            user_id: int,
+            chat_id: int,
+            state_groups: Dict[str, Type[StatesGroup]],
+    ):
         self.storage = storage
         self.state_groups = state_groups
         self.user_id = user_id
@@ -20,18 +24,18 @@ class StorageProxy:
 
     async def load_context(self, intent_id: str) -> Context:
         data = await self.storage.get_data(
-            chat=self.chat_id,
-            user=self._context_key(intent_id)
+            chat=self.chat_id, user=self._context_key(intent_id)
         )
         if not data:
-            raise UnknownIntent(f"Context not found for intent id: {intent_id}")
+            raise UnknownIntent(
+                f"Context not found for intent id: {intent_id}"
+            )
         data["state"] = self._state(data["state"])
         return Context(**data)
 
     async def load_stack(self, stack_id: str = DEFAULT_STACK_ID) -> Stack:
         data = await self.storage.get_data(
-            chat=self.chat_id,
-            user=self._stack_key(stack_id)
+            chat=self.chat_id, user=self._stack_key(stack_id)
         )
         if not data:
             return Stack(_id=stack_id)
@@ -49,10 +53,14 @@ class StorageProxy:
         )
 
     async def remove_context(self, intent_id: str):
-        await self.storage.reset_data(chat=self.chat_id, user=self._context_key(intent_id))
+        await self.storage.reset_data(
+            chat=self.chat_id, user=self._context_key(intent_id)
+        )
 
     async def remove_stack(self, stack_id: str):
-        await self.storage.reset_data(chat=self.chat_id, user=self._stack_key(stack_id))
+        await self.storage.reset_data(
+            chat=self.chat_id, user=self._stack_key(stack_id)
+        )
 
     async def save_stack(self, stack: Optional[Stack]) -> None:
         if not stack:

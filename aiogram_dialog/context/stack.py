@@ -6,8 +6,8 @@ from typing import List, Optional
 
 from aiogram.dispatcher.filters.state import State
 
-from .events import Data
 from .context import Context
+from .events import Data
 from ..exceptions import DialogStackOverflow
 
 DEFAULT_STACK_ID = ""
@@ -41,7 +41,9 @@ class Stack:
     last_message_id: Optional[int] = field(compare=False, default=None)
     last_media_id: Optional[str] = field(compare=False, default=None)
     last_media_unique_id: Optional[str] = field(compare=False, default=None)
-    last_income_media_group_id: Optional[str] = field(compare=False, default=None)
+    last_income_media_group_id: Optional[str] = field(
+        compare=False, default=None
+    )
 
     @property
     def id(self):

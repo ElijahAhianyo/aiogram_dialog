@@ -9,7 +9,11 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 from aiogram_dialog import (
-    Dialog, DialogManager, DialogRegistry, Window, StartMode,
+    Dialog,
+    DialogManager,
+    DialogRegistry,
+    Window,
+    StartMode,
 )
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button, Multiselect, Cancel, Start
@@ -35,7 +39,7 @@ async def get_data(dialog_manager: DialogManager, **kwargs):
             ("Pear", 2),
             ("Orange", 3),
             ("Banana", 4),
-        ]
+        ],
     }
 
 
@@ -65,8 +69,12 @@ dialog = Dialog(
         Format("Last text: {last_text}\n"),
         Format("{now}"),
         Button(Const("Click me!"), id="btn1", on_click=on_click),
-        Start(Const("Start new stack"), id="s1",
-              mode=StartMode.NEW_STACK, state=DialogSG.greeting),
+        Start(
+            Const("Start new stack"),
+            id="s1",
+            mode=StartMode.NEW_STACK,
+            state=DialogSG.greeting,
+        ),
         multi,
         Cancel(),
         # Inputs work only in default stack
@@ -92,5 +100,5 @@ async def main():
     await dp.start_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

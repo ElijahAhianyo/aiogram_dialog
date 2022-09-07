@@ -25,11 +25,10 @@ logger = getLogger(__name__)
 
 
 class IntentFilter(BoundFilter):
-    key = 'aiogd_intent_state_group'
+    key = "aiogd_intent_state_group"
 
     def __init__(
-            self,
-            aiogd_intent_state_group: Optional[Type[StatesGroup]] = None
+            self, aiogd_intent_state_group: Optional[Type[StatesGroup]] = None
     ):
         self.intent_state_group = aiogd_intent_state_group
 
@@ -53,8 +52,10 @@ class IntentMiddleware(BaseMiddleware):
         self.state_groups = state_groups
 
     async def _load_context(
-            self, event: ChatEvent,
-            intent_id: Optional[str], stack_id: Optional[str],
+            self,
+            event: ChatEvent,
+            intent_id: Optional[str],
+            stack_id: Optional[str],
             data: dict,
     ) -> None:
         chat = get_chat(event)
@@ -67,7 +68,10 @@ class IntentMiddleware(BaseMiddleware):
         logger.debug(
             "Loading context for intent: `%s`, "
             "stack: `%s`, user: `%s`, chat: `%s`",
-            intent_id, stack_id, event.from_user.id, chat.id,
+            intent_id,
+            stack_id,
+            event.from_user.id,
+            chat.id,
         )
         if intent_id is not None:
             context = await proxy.load_context(intent_id)
@@ -83,7 +87,10 @@ class IntentMiddleware(BaseMiddleware):
                     )
                 context = None
             else:
-                if intent_id is not None and intent_id != stack.last_intent_id():
+                if (
+                        intent_id is not None
+                        and intent_id != stack.last_intent_id()
+                ):
                     raise OutdatedIntent(
                         stack.id,
                         f"Outdated intent id ({intent_id}) "
@@ -100,10 +107,10 @@ class IntentMiddleware(BaseMiddleware):
 
     def _intent_id_from_reply(self, event: Message) -> Optional[str]:
         if not (
-                event.reply_to_message and
-                event.reply_to_message.from_user.id == event.bot.id and
-                event.reply_to_message.reply_markup and
-                event.reply_to_message.reply_markup.inline_keyboard
+                event.reply_to_message
+                and event.reply_to_message.from_user.id == event.bot.id
+                and event.reply_to_message.reply_markup
+                and event.reply_to_message.reply_markup.inline_keyboard
         ):
             return None
         for row in event.reply_to_message.reply_markup.inline_keyboard:
@@ -114,19 +121,30 @@ class IntentMiddleware(BaseMiddleware):
         return None
 
     async def on_pre_process_message(
-            self, event: Message, data: dict,
+            self,
+            event: Message,
+            data: dict,
     ) -> None:
         if intent_id := self._intent_id_from_reply(event):
             await self._load_context(
-                event, intent_id, DEFAULT_STACK_ID, data,
+                event,
+                intent_id,
+                DEFAULT_STACK_ID,
+                data,
             )
         else:
             await self._load_context(
-                event, None, DEFAULT_STACK_ID, data,
+                event,
+                None,
+                DEFAULT_STACK_ID,
+                data,
             )
 
     async def on_post_process_message(
-            self, message: Message, result, data: dict,
+            self,
+            message: Message,
+            result,
+            data: dict,
     ) -> None:
         proxy: StorageProxy = data.pop(STORAGE_KEY)
         await proxy.save_context(data.pop(CONTEXT_KEY))
@@ -136,27 +154,35 @@ class IntentMiddleware(BaseMiddleware):
             self, event: DialogUpdateEvent, data: dict
     ) -> None:
         await self._load_context(
-            event, event.intent_id, event.stack_id, data,
+            event,
+            event.intent_id,
+            event.stack_id,
+            data,
         )
 
-    async def on_pre_process_callback_query(self, event: CallbackQuery,
-                                            data: dict):
+    async def on_pre_process_callback_query(
+            self, event: CallbackQuery, data: dict
+    ):
         original_data = event.data
         intent_id, callback_data = remove_indent_id(event.data)
         await self._load_context(
-            event, intent_id, DEFAULT_STACK_ID, data,
+            event,
+            intent_id,
+            DEFAULT_STACK_ID,
+            data,
         )
         logger.debug("Original callback data: %s", original_data)
         event.data = callback_data
         data[CALLBACK_DATA_KEY] = original_data
 
     async def on_pre_process_my_chat_member(
-            self,
-            event: ChatMemberUpdated,
-            data: dict
+            self, event: ChatMemberUpdated, data: dict
     ) -> None:
         await self._load_context(
-            event, None, DEFAULT_STACK_ID, data,
+            event,
+            None,
+            DEFAULT_STACK_ID,
+            data,
         )
 
     on_post_process_callback_query = on_post_process_message
@@ -164,15 +190,16 @@ class IntentMiddleware(BaseMiddleware):
     on_post_process_my_chat_member = on_post_process_message
 
     async def on_pre_process_error(
-            self, update: Update, error: Exception, data: dict,
+            self,
+            update: Update,
+            error: Exception,
+            data: dict,
     ) -> None:
         if isinstance(error, InvalidStackIdError):
             return
 
         event = (
-                update.message or
-                update.my_chat_member or
-                update.callback_query
+                update.message or update.my_chat_member or update.callback_query
         )
         if not event:
             return
@@ -199,7 +226,11 @@ class IntentMiddleware(BaseMiddleware):
         data[CONTEXT_KEY] = context
 
     async def on_post_process_error(
-            self, event: Any, error: Exception, result: list, data: dict,
+            self,
+            event: Any,
+            error: Exception,
+            result: list,
+            data: dict,
     ) -> None:
         proxy: StorageProxy = data.pop(STORAGE_KEY, None)
         if not proxy:

@@ -1,4 +1,13 @@
-from typing import Dict, Any, Iterable, Optional, Callable, Union, Tuple, Mapping
+from typing import (
+    Dict,
+    Any,
+    Iterable,
+    Optional,
+    Callable,
+    Union,
+    Tuple,
+    Mapping,
+)
 
 from aiogram import Bot
 from jinja2 import Environment, BaseLoader
@@ -34,9 +43,8 @@ class StubLoader(BaseLoader):
 
 
 def _create_env(
-        *args: Any,
-        filters: Optional[Filters] = None,
-        **kwargs: Any) -> Environment:
+        *args: Any, filters: Optional[Filters] = None, **kwargs: Any
+) -> Environment:
     kwargs.setdefault("autoescape", True)
     kwargs.setdefault("lstrip_blocks", True)
     kwargs.setdefault("trim_blocks", True)

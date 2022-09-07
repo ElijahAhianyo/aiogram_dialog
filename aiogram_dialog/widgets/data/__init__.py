@@ -1,5 +1,8 @@
 from .data_context import (
-    DataGetter, CompositeGetter, StaticGetter, PreviewAwareGetter,
+    DataGetter,
+    CompositeGetter,
+    StaticGetter,
+    PreviewAwareGetter,
 )
 
 __all__ = [

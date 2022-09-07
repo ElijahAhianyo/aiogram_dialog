@@ -2,12 +2,14 @@ from logging import getLogger
 from typing import Optional, Tuple
 
 from aiogram.types import (
-    Message, CallbackQuery, Chat, ChatMemberUpdated, User,
+    Message,
+    CallbackQuery,
+    Chat,
+    ChatMemberUpdated,
+    User,
 )
 
-from .context.events import (
-    DialogUpdateEvent, ChatEvent
-)
+from .context.events import DialogUpdateEvent, ChatEvent
 from .manager.protocols import NewMessage, MediaId
 
 logger = getLogger(__name__)
@@ -42,11 +44,11 @@ def is_user_loaded(user: User) -> bool:
 
 def get_media_id(message: Message) -> Optional[MediaId]:
     media = (
-        message.audio or
-        message.animation or
-        message.document or
-        (message.photo[-1] if message.photo else None) or
-        message.video
+            message.audio
+            or message.animation
+            or message.document
+            or (message.photo[-1] if message.photo else None)
+            or message.video
     )
     if not media:
         return None
@@ -56,8 +58,9 @@ def get_media_id(message: Message) -> Optional[MediaId]:
     )
 
 
-def intent_callback_data(intent_id: str,
-                         callback_data: Optional[str]) -> Optional[str]:
+def intent_callback_data(
+        intent_id: str, callback_data: Optional[str]
+) -> Optional[str]:
     if callback_data is None:
         return None
     return intent_id + CB_SEP + callback_data

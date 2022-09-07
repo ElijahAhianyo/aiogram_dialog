@@ -21,14 +21,21 @@ class Multi(_Multi):
 
 
 def new_case_field(fieldname: str) -> Selector:
-    def case_field(data: Dict, widget: "Case", manager: DialogManager) -> Hashable:
+    def case_field(
+            data: Dict, widget: "Case", manager: DialogManager
+    ) -> Hashable:
         return data.get(fieldname)
 
     return case_field
 
 
 class Case(Text):
-    def __init__(self, texts: Dict[Any, Text], selector: Union[str, Selector], when: WhenCondition = None):
+    def __init__(
+            self,
+            texts: Dict[Any, Text],
+            selector: Union[str, Selector],
+            when: WhenCondition = None,
+    ):
         super().__init__(when)
         self.texts = texts
         if isinstance(selector, str):

@@ -1,7 +1,8 @@
 from typing import TypeVar, Generic
 
 from ..manager.protocols import (
-    ManagedDialogProto, DialogManager, ManagedWidgetProto,
+    DialogManager,
+    ManagedWidgetProto,
 )
 
 

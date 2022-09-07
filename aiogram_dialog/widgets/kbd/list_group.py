@@ -5,7 +5,10 @@ from typing import List, Dict, Optional, Union, Sequence, Callable, Any
 from aiogram.types import InlineKeyboardButton, CallbackQuery, Message
 
 from aiogram_dialog.manager.protocols import (
-    DialogManager, Context, ManagedDialogAdapterProto, NewMessage,
+    DialogManager,
+    Context,
+    ManagedDialogAdapterProto,
+    NewMessage,
     ManagedDialogProto,
 )
 from .base import Keyboard
@@ -66,7 +69,8 @@ def get_identity(items: Sequence) -> ItemsGetter:
 
 class ListGroup(Keyboard):
     def __init__(
-            self, *buttons: Keyboard,
+            self,
+            *buttons: Keyboard,
             id: Optional[str] = None,
             item_id_getter: ItemIdGetter,
             items: Union[str, Sequence],
@@ -89,7 +93,11 @@ class ListGroup(Keyboard):
         return kbd
 
     async def _render_item(
-            self, pos: int, item: Any, data: Dict, manager: DialogManager,
+            self,
+            pos: int,
+            item: Any,
+            data: Dict,
+            manager: DialogManager,
     ) -> List[List[InlineKeyboardButton]]:
         kbd: List[List[InlineKeyboardButton]] = []
         data = {"data": data, "item": item, "pos": pos + 1, "pos0": pos}
@@ -116,7 +124,10 @@ class ListGroup(Keyboard):
         return None
 
     async def _process_item_callback(
-            self, c: CallbackQuery, data: str, dialog: ManagedDialogProto,
+            self,
+            c: CallbackQuery,
+            data: str,
+            dialog: ManagedDialogProto,
             manager: DialogManager,
     ) -> bool:
         item_id, callback_data = data.split(":", maxsplit=1)
@@ -133,12 +144,14 @@ class ListGroup(Keyboard):
 
 
 class ManagedListGroupAdapter(ManagedWidgetAdapter[ListGroup]):
-    def find_for_item(
-            self, widget_id: str, item_id: str
-    ) -> Optional[Any]:
+    def find_for_item(self, widget_id: str, item_id: str) -> Optional[Any]:
         widget = self.widget.find_for_item(self.manager, widget_id, item_id)
         if widget:
-            return widget.managed(SubManager(
-                self.manager, self.widget.widget_id, item_id,
-            ))
+            return widget.managed(
+                SubManager(
+                    self.manager,
+                    self.widget.widget_id,
+                    item_id,
+                )
+            )
         return None
